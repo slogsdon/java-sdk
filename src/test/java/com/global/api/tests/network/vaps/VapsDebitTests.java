@@ -455,4 +455,59 @@ public class VapsDebitTests {
 
         assertEquals("400", cancel.getResponseCode());
     }
+
+    @Test
+    public void test_168_debit_pre_auth_completion() throws ApiException {
+        Transaction response = track.authorize(new BigDecimal(12))
+                .withCurrency("USD")
+                .execute("ICR");
+        assertNotNull(response);
+
+        // check message data
+        PriorMessageInformation pmi = response.getMessageInformation();
+        assertNotNull(pmi);
+        assertEquals("1100", pmi.getMessageTransactionIndicator());
+        assertEquals("000800", pmi.getProcessingCode());
+        assertEquals("101", pmi.getFunctionCode());
+
+        // check response
+        assertEquals("000", response.getResponseCode());
+
+        Transaction capture = response.capture(new BigDecimal(12))
+                .execute("ICR");
+        assertNotNull(capture);
+        assertNotNull(capture.getPreAuthCompletion());
+
+        // check the pre-auth completion
+        pmi = capture.getMessageInformation();
+        assertNotNull(pmi);
+        assertEquals("1220", pmi.getMessageTransactionIndicator());
+        assertEquals("000800", pmi.getProcessingCode());
+        assertEquals("201", pmi.getFunctionCode());
+        assertEquals("1376", pmi.getMessageReasonCode());
+
+        // check response
+        assertEquals("000", capture.getResponseCode());
+
+        // check the data-collect
+        Transaction completion = capture.getPreAuthCompletion();
+        assertNotNull(completion);
+
+        if(!completion.getResponseCode().equals("000")) {
+            // re-do the data-collect
+            completion = response.preAuthCompletion(new BigDecimal(12))
+                    .execute("ICR");
+
+            assertNotNull(completion);
+        }
+
+        pmi = completion.getMessageInformation();
+        assertNotNull(pmi);
+        assertEquals("1220", pmi.getMessageTransactionIndicator());
+        assertEquals("000800", pmi.getProcessingCode());
+        assertEquals("201", pmi.getFunctionCode());
+        assertEquals("1379", pmi.getMessageReasonCode());
+
+        assertEquals("000", completion.getResponseCode());
+    }
 }

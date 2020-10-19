@@ -10,7 +10,10 @@ public enum ServiceEndpoints implements IStringConstant {
     PAYROLL_PRODUCTION("https://taapi.heartlandpayrollonlinetest.com/PosWebUI"),
     PAYROLL_TEST("https://taapi.heartlandpayrollonlinetest.com/PosWebUI/Test/Test"),
     TABLE_SERVICE_PRODUCTION("https://www.freshtxt.com/api31/"),
-    TABLE_SERVICE_TEST("https://www.freshtxt.com/api31/");
+    TABLE_SERVICE_TEST("https://www.freshtxt.com/api31/"),
+    BILLPAY_TEST("https://testing.heartlandpaymentservices.net"),
+    BILLPAY_CERTIFICATION("https://staging.heartlandpaymentservices.net"),
+    BILLPAY_PRODUCTION("https://heartlandpaymentservices.net");
 
     String value;
     ServiceEndpoints(String value) { this.value = value; }

@@ -392,7 +392,7 @@ public class RealexConnector extends XmlGateway implements IPaymentGateway, IRec
             if(paymentData.isOfferToSaveCard() != null) {
                 request.set("OFFER_SAVE_CARD", paymentData.isOfferToSaveCard() ? "1" : "0");
             }
-            if(paymentData.isCustomerExists() != null) {
+            if(paymentData.isCustomerExists()) {
                 request.set("PAYER_EXIST", paymentData.isCustomerExists() ? "1" : "0");
             }
             if(hostedPaymentConfig.isDisplaySavedCards() == null) {

@@ -30,6 +30,7 @@ public class Transaction {
     private String cardLast4;
     private String cavvResponseCode;
     private String commercialIndicator;
+    private BigDecimal convenienceFee;
     private String cvnResponseCode;
     private String cvnResponseMessage;
     private DccRateData dccRateData;
@@ -165,6 +166,12 @@ public class Transaction {
     }
     public void setCommercialIndicator(String commercialIndicator) {
         this.commercialIndicator = commercialIndicator;
+    }
+    public BigDecimal getConvenienceFee() {
+        return convenienceFee;
+    }
+    public void setConvenienceFee(BigDecimal convenienceFee) {
+        this.convenienceFee = convenienceFee;
     }
     public String getCvnResponseCode() {
         return cvnResponseCode;

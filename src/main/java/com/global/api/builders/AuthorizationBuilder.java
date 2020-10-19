@@ -2,6 +2,7 @@ package com.global.api.builders;
 
 import com.global.api.ServicesContainer;
 import com.global.api.entities.*;
+import com.global.api.entities.billing.Bill;
 import com.global.api.entities.enums.*;
 import com.global.api.entities.exceptions.ApiException;
 import com.global.api.entities.exceptions.UnsupportedTransactionException;
@@ -16,6 +17,7 @@ import com.global.api.paymentMethods.CreditCardData;
 import com.global.api.paymentMethods.EBTCardData;
 import com.global.api.paymentMethods.GiftCard;
 import com.global.api.paymentMethods.IPaymentMethod;
+import com.global.api.paymentMethods.ITokenizable;
 import com.global.api.paymentMethods.TransactionReference;
 
 import java.math.BigDecimal;
@@ -50,6 +52,8 @@ public class AuthorizationBuilder extends TransactionBuilder<Transaction> {
     private String dynamicDescriptor;
     private EcommerceInfo ecommerceInfo;
     private EmvChipCondition emvChipCondition;
+    private EmvFallbackCondition emvFallbackCondition;
+    private EmvLastChipRead emvLastChipRead;
     private FraudFilterMode fraudFilterMode;
     private BigDecimal gratuity;
     private HostedPaymentData hostedPaymentData;
@@ -78,6 +82,7 @@ public class AuthorizationBuilder extends TransactionBuilder<Transaction> {
     private String tagData;
     private String timestamp;
     private StoredCredentialInitiator transactionInitiator;
+    private List<Bill> bills;
 
     // network fields
     private BigDecimal feeAmount;
@@ -115,6 +120,9 @@ public class AuthorizationBuilder extends TransactionBuilder<Transaction> {
     public Address getBillingAddress() {
         return billingAddress;
     }
+    public List<Bill> getBills() {
+        return bills;
+    }
     public String getCardBrandTransactionId( ) {
         return cardBrandTransactionId;
     }
@@ -129,6 +137,9 @@ public class AuthorizationBuilder extends TransactionBuilder<Transaction> {
     }
     public String getCurrency() {
         return currency;
+    }
+    public Customer getCustomer() {
+        return getCustomerData();
     }
     public String getCustomerId() {
         return customerId;
@@ -227,6 +238,12 @@ public class AuthorizationBuilder extends TransactionBuilder<Transaction> {
     public EmvChipCondition getEmvChipCondition() {
         return emvChipCondition;
     }
+    public EmvFallbackCondition getEmvFallbackCondition() {
+        return emvFallbackCondition;
+    }
+    public EmvLastChipRead getEmvLastChipRead() {
+        return emvLastChipRead;
+    }
     public String getMessageAuthenticationCode() {
         return messageAuthenticationCode;
     }
@@ -309,6 +326,14 @@ public class AuthorizationBuilder extends TransactionBuilder<Transaction> {
         this.balanceInquiryType = value;
         return this;
     }
+    public AuthorizationBuilder withBills(Bill ... bills) {
+        this.bills = Arrays.asList(bills);
+        return this;
+    }
+    public AuthorizationBuilder withBills(List<Bill> values) {
+        this.bills = values;
+        return this;
+    }
     public AuthorizationBuilder withCashBack(BigDecimal value) {
         this.cashBackAmount = value;
         this.transactionModifier = TransactionModifier.CashBack;
@@ -316,6 +341,14 @@ public class AuthorizationBuilder extends TransactionBuilder<Transaction> {
     }
     public AuthorizationBuilder withChipCondition(EmvChipCondition value) {
         this.emvChipCondition = value;
+        return this;
+    }
+    public AuthorizationBuilder withFallbackCondition(EmvFallbackCondition value) {
+        this.emvFallbackCondition = value;
+        return this;
+    }
+    public AuthorizationBuilder withLastChipRead(EmvLastChipRead value) {
+        this.emvLastChipRead = value;
         return this;
     }
     public AuthorizationBuilder withClerkId(String value) {
@@ -351,6 +384,9 @@ public class AuthorizationBuilder extends TransactionBuilder<Transaction> {
         this.currency = value;
         return this;
     }
+    public AuthorizationBuilder withCustomer(Customer value) {
+        return withCustomerData(value);
+    } 
     public AuthorizationBuilder withCustomerId(String value) {
         this.customerId = value;
         return this;
@@ -704,5 +740,9 @@ public class AuthorizationBuilder extends TransactionBuilder<Transaction> {
 
         this.validations.of(TransactionType.DccRateLookup)
                 .check("dccRateData").isNotNull();
+
+        this.validations.of(TransactionType.Tokenize)
+                .check("paymentMethod").isNotNull()
+                .check("paymentMethod").isInstanceOf(ITokenizable.class);
     }
 }

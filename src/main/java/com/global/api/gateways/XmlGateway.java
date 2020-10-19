@@ -8,7 +8,10 @@ public abstract class XmlGateway extends Gateway {
     }
 
     public String doTransaction(String request) throws GatewayException {
-        GatewayResponse response = sendRequest("POST", "", request);
+        return doTransaction(request, "");
+    }
+    public String doTransaction(String request, String endpoint) throws GatewayException {
+        GatewayResponse response = sendRequest("POST", endpoint, request);
         if(response.getStatusCode() != 200)
             throw new GatewayException("Unexpected http status code [" + response.getStatusCode() + "]");
         return response.getRawResponse();

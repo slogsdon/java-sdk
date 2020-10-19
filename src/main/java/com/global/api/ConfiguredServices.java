@@ -17,6 +17,7 @@ public class ConfiguredServices implements IDisposable {
     private TableServiceConnector tableServiceConnector;
     private PayrollConnector payrollConnector;
     private HashMap<Secure3dVersion, ISecure3dProvider> secure3dProviders;
+    private IBillingProvider billingProvider;
 
     IPaymentGateway getGatewayConnector() {
         return gatewayConnector;
@@ -67,6 +68,12 @@ public class ConfiguredServices implements IDisposable {
     }
     public void setSecure3dProvider(Secure3dVersion version, ISecure3dProvider provider) {
         secure3dProviders.put(version, provider);
+    }
+    public IBillingProvider getBillingProvider() {
+        return billingProvider;
+    }
+    public void setBillingProvider(IBillingProvider billingProvider) {
+        this.billingProvider = billingProvider;
     }
 
     public ConfiguredServices() {

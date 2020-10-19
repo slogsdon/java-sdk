@@ -402,7 +402,7 @@ public class PorticoConnector extends XmlGateway implements IPaymentGateway {
         }
 
         // lodging data
-        if(builder.getLodgingData() != null) {
+//        if(builder.getLodgingData() != null) {
 //            LodgingData lodging = builder.getLodgingData();
 //
 //            Element lodgingElement = et.subElement(block1, "LodgingData");
@@ -429,7 +429,7 @@ public class PorticoConnector extends XmlGateway implements IPaymentGateway {
 //                    et.subElement(lodgingDataEdit, "ExtraChargeAmtInfo", lodging.getExtraChargeAmount());
 //                }
 //            }
-        }
+//        }
 
         String response = doTransaction(buildEnvelope(et, transaction, builder.getClientTransactionId()));
         return mapResponse(response, builder.getPaymentMethod());
@@ -609,7 +609,7 @@ public class PorticoConnector extends XmlGateway implements IPaymentGateway {
         // Transaction
         Element trans = et.subElement(version1, "Transaction");
         trans.append(transaction);
-
+        
         return et.toString(envelope);
     }
 
@@ -904,6 +904,8 @@ public class PorticoConnector extends XmlGateway implements IPaymentGateway {
                 return "GiftCardReward";
             case Increment:
                 return "CreditIncrementalAuth";
+            case Tokenize:
+            	return "Tokenize";
             default:
                 throw new UnsupportedTransactionException();
         }

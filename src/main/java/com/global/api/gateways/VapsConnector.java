@@ -1189,8 +1189,8 @@ public class VapsConnector extends NetworkGateway implements IPaymentGateway {
                             request.set(DataElementId.DE_025, DE25_MessageReasonCode.PinDebit_EBT_Acknowledgement);
 
                             Transaction dataCollectResponse = sendRequest(request, builder, orgCorr1, orgCorr2);
-                            dataCollectResponse.setPreAuthCompletion(response);
-                            return dataCollectResponse;
+                            response.setPreAuthCompletion(dataCollectResponse);
+                            return response;
                         }
                     }
                 }
@@ -1460,6 +1460,13 @@ public class VapsConnector extends NetworkGateway implements IPaymentGateway {
             case Refund: {
                 if(builder.getPaymentMethod() instanceof Debit) {
                     mtiValue += "0";
+                }
+                else if(builder.getPaymentMethod() instanceof GiftCard) {
+                    String cardType = ((GiftCard) builder.getPaymentMethod()).getCardType();
+                    if(cardType.equals("ValueLink")) {
+                        mtiValue += "0";
+                    }
+                    else mtiValue += "2";
                 }
                 else mtiValue += "2";
             } break;
@@ -2285,10 +2292,7 @@ public class VapsConnector extends NetworkGateway implements IPaymentGateway {
             if(builder != null && builder.getPaymentMethod() instanceof ITrackData) {
                 ITrackData track = (ITrackData)builder.getPaymentMethod();
                 if(request.has(DataElementId.DE_035) || request.has(DataElementId.DE_045)) {
-                    if(StringUtils.isNullOrEmpty(track.getTruncatedTrackData())) {
-
-                    }
-                    else {
+                    if(!StringUtils.isNullOrEmpty(track.getTruncatedTrackData())) {
                         request.set(track.getTrackNumber().equals(TrackNumber.TrackTwo) ? DataElementId.DE_035 : DataElementId.DE_045, track.getTruncatedTrackData());
                     }
                 }

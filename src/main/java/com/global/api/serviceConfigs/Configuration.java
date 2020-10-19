@@ -4,6 +4,7 @@ import com.global.api.ConfiguredServices;
 import com.global.api.entities.enums.Environment;
 import com.global.api.entities.enums.Host;
 import com.global.api.entities.enums.HostError;
+import com.global.api.entities.enums.ServiceEndpoints;
 import com.global.api.entities.exceptions.ConfigurationException;
 
 import java.util.ArrayList;
@@ -29,6 +30,9 @@ public abstract class Configuration {
     }
     public void setServiceUrl(String serviceUrl) {
         this.serviceUrl = serviceUrl;
+    }
+    public void setServiceUrl(ServiceEndpoints serviceUrl) {
+        this.serviceUrl = serviceUrl.getValue();
     }
 
     public boolean isEnableLogging() {

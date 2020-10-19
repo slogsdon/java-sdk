@@ -5,6 +5,7 @@ import com.global.api.entities.DccRateData;
 import com.global.api.entities.LodgingData;
 import com.global.api.entities.enums.*;
 import com.global.api.entities.Transaction;
+import com.global.api.entities.billing.Bill;
 import com.global.api.entities.exceptions.ApiException;
 import com.global.api.gateways.IPaymentGateway;
 import com.global.api.network.entities.FleetData;
@@ -18,9 +19,11 @@ import com.global.api.utils.StringUtils;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
+import java.util.List;
 
 public class ManagementBuilder extends TransactionBuilder<Transaction> {
 	private AlternativePaymentType alternativePaymentType;
@@ -30,8 +33,10 @@ public class ManagementBuilder extends TransactionBuilder<Transaction> {
     private BigDecimal cashBackAmount;
     private String clerkId;
     private String clientTransactionId;
+    private BigDecimal convenienceAmount;
     private String currency;
     private String customerId;
+    private String customerIpAddress;
     private boolean customerInitiated;
     private DccRateData dccRateData;
     private String description;
@@ -56,6 +61,7 @@ public class ManagementBuilder extends TransactionBuilder<Transaction> {
     private String transportData;
     private BigDecimal totalCredits;
     private BigDecimal totalDebits;
+    private List<Bill> bills;
 
     public AlternativePaymentType getAlternativePaymentType() {
 		return alternativePaymentType;
@@ -73,6 +79,9 @@ public class ManagementBuilder extends TransactionBuilder<Transaction> {
     }
     public BatchCloseType getBatchCloseType() {
         return batchCloseType;
+    }
+    public List<Bill> getBills() {
+        return bills;
     }
     public String getReferenceNumber() {
         return referenceNumber;
@@ -92,11 +101,17 @@ public class ManagementBuilder extends TransactionBuilder<Transaction> {
         }
         return null;
     }
+    public BigDecimal getConvenienceAmount() {
+        return convenienceAmount;
+    }
     public String getCurrency() {
         return currency;
     }
     public String getCustomerId() {
         return customerId;
+    }
+    public String getCustomerIpAddress() {
+        return customerIpAddress;
     }
     public boolean isCustomerInitiated() {
         return customerInitiated;
@@ -212,6 +227,14 @@ public class ManagementBuilder extends TransactionBuilder<Transaction> {
 
         return this;
     }
+    public ManagementBuilder withBills(Bill ... bills) {
+        this.bills = Arrays.asList(bills);
+        return this;
+    }
+    public ManagementBuilder withBills(List<Bill> values) {
+        this.bills = values;
+        return this;
+    }
     public ManagementBuilder withCashBackAmount(BigDecimal value) {
         cashBackAmount = value;
         return this;
@@ -230,12 +253,20 @@ public class ManagementBuilder extends TransactionBuilder<Transaction> {
         clientTransactionId = value;
         return this;
     }
+    public ManagementBuilder withConvenienceAmt(BigDecimal value) {
+        this.convenienceAmount = value;
+        return this;
+    }
     public ManagementBuilder withCurrency(String value) {
         this.currency = value;
         return this;
     }
     public ManagementBuilder withCustomerId(String value) {
         this.customerId = value;
+        return this;
+    }
+    public ManagementBuilder withCustomerIpAddress(String value) {
+        this.customerIpAddress = value;
         return this;
     }
     public ManagementBuilder withCustomerInitiated(boolean value) {

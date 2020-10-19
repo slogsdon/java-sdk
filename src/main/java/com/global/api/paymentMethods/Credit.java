@@ -1,6 +1,7 @@
 package com.global.api.paymentMethods;
 
 import com.global.api.builders.AuthorizationBuilder;
+import com.global.api.builders.ManagementBuilder;
 import com.global.api.entities.EncryptionData;
 import com.global.api.entities.ThreeDSecure;
 import com.global.api.entities.Transaction;
@@ -9,7 +10,9 @@ import com.global.api.entities.enums.MobilePaymentMethodType;
 import com.global.api.entities.enums.PaymentMethodType;
 import com.global.api.entities.enums.TransactionType;
 import com.global.api.entities.exceptions.ApiException;
+import com.global.api.entities.exceptions.BuilderException;
 import com.global.api.utils.CardUtils;
+import com.global.api.utils.StringUtils;
 
 import java.math.BigDecimal;
 
@@ -21,6 +24,7 @@ public abstract class Credit implements IPaymentMethod, IEncryptable, ITokenizab
     private String token;
     protected String cardType = "Unknown";
     protected boolean fleetCard;
+    private String bankName;
 
     public String getCardType() {
         return cardType;
@@ -58,6 +62,12 @@ public abstract class Credit implements IPaymentMethod, IEncryptable, ITokenizab
     }
     public void setFleetCard(boolean fleetCard) {
         this.fleetCard = fleetCard;
+    }
+    public String getBankName() {
+        return bankName;
+    }
+    public void setBankName(String value) {
+        this.bankName = value;
     }
 
     public AuthorizationBuilder authorize() { return authorize(null, false); }
@@ -105,12 +115,71 @@ public abstract class Credit implements IPaymentMethod, IEncryptable, ITokenizab
     public AuthorizationBuilder verify() {
         return new AuthorizationBuilder(TransactionType.Verify, this);
     }
-
+    
     public String tokenize() {
+    	return tokenize(true, "default");
+    }
+    public String tokenize(boolean validatecard) {
+    	return tokenize(validatecard, "default");
+    }
+    public String tokenize(String configName) { 
+    	return tokenize(true, configName);
+    }
+    public String tokenize(boolean validatecard, String configName) {
         try {
-            Transaction response = new AuthorizationBuilder(TransactionType.Verify, this).withRequestMultiUseToken(true).execute();
+            Transaction response = new AuthorizationBuilder(validatecard ? TransactionType.Verify : TransactionType.Tokenize, this)
+            		.withRequestMultiUseToken(true)
+            		.execute("tokenConfig");
             return response.getToken();
         }
         catch(ApiException e) { return null; }
+    }
+
+    public boolean updateTokenExpiry() throws ApiException {
+        return updateTokenExpiry("default");
+    }
+
+    /// <summary>
+    /// Updates the token expiry date with the values proced to the card object
+    /// </summary>
+    /// <returns>boolean value indcating success/failure</returns>
+    public boolean updateTokenExpiry(String configName) throws ApiException {
+        if (StringUtils.isNullOrEmpty(token)) {
+            throw new BuilderException("Token cannot be null");
+        }
+
+        try {
+            new ManagementBuilder(TransactionType.TokenUpdate)
+                .withPaymentMethod(this)
+                .execute(configName);
+            return true;
+        }
+        catch (ApiException ex) {
+            return false;
+        }
+    }
+
+    public boolean deleteToken() throws ApiException {
+        return deleteToken("default");
+    }
+
+    /// <summary>
+    /// Deletes the token associated with the current card object
+    /// </summary>
+    /// <returns>boolean value indicating success/failure</returns>
+    public boolean deleteToken(String configName) throws ApiException {
+        if (StringUtils.isNullOrEmpty(token)) {
+            throw new BuilderException("Token cannot be null");
+        }
+
+        try {
+            new ManagementBuilder(TransactionType.TokenDelete)
+                .withPaymentMethod(this)
+                .execute(configName);
+            return true;
+        }
+        catch (ApiException ex) {
+            return false;
+        }
     }
 }
